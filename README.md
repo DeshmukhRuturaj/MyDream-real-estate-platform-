@@ -1,4 +1,4 @@
-# R-Estate Market
+# MyDream
 
 A modern real estate platform built with React, Supabase, and Google Maps, allowing users to search, list, and manage properties for sale or rent.
 
@@ -249,11 +249,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Authors
 
-- Your Name - Initial work
-
-## 🙏 Acknowledgments
-
-- Supabase for backend services
-- Google Maps for location services
-- EmailJS for email functionality
-- React and Vite communities 
+-Ruturaj Deshmukh
