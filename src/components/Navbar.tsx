@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, LogOut, Home, ChevronDown } from 'lucide-react';
+import { User, LogOut, Home, ChevronDown, Menu, X } from 'lucide-react';
 
 interface NavbarProps {
   onSignInClick: () => void;
@@ -11,6 +11,7 @@ export function Navbar({ onSignInClick }: NavbarProps) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export function Navbar({ onSignInClick }: NavbarProps) {
     } else {
       navigate('/list-property');
     }
+    setIsMobileMenuOpen(false);
   };
 
   const handleSignOut = async () => {
@@ -55,7 +57,8 @@ export function Navbar({ onSignInClick }: NavbarProps) {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-8">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
             <Link to="/buy" className="text-gray-700 hover:text-gray-900">
               Buy
             </Link>
@@ -82,7 +85,7 @@ export function Navbar({ onSignInClick }: NavbarProps) {
                   <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                     <User className="w-5 h-5 text-blue-600" />
                   </div>
-                  <span className="hidden md:inline">{user.email?.split('@')[0]}</span>
+                  <span>{user.email?.split('@')[0]}</span>
                   <ChevronDown className="w-4 h-4" />
                 </button>
 
@@ -118,7 +121,89 @@ export function Navbar({ onSignInClick }: NavbarProps) {
               </button>
             )}
           </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-700 hover:text-gray-900 focus:outline-none"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link
+                to="/buy"
+                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Buy
+              </Link>
+              <Link
+                to="/rent"
+                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Rent
+              </Link>
+              <a
+                href="#"
+                onClick={handleListPropertyClick}
+                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                List Property
+              </a>
+              <Link
+                to="/about"
+                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+              {user ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className="flex items-center px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Home className="w-4 h-4 mr-2" />
+                    My Properties
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    onSignInClick();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

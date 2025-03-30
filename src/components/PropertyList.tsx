@@ -165,7 +165,7 @@ export function PropertyList({ type = 'sale' }: PropertyListProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 p-2 sm:p-4">
         {properties.map((property) => (
           <div
             key={property.id}
@@ -177,23 +177,23 @@ export function PropertyList({ type = 'sale' }: PropertyListProps) {
                 <img
                   src={property.images[0]}
                   alt={property.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-40 sm:h-48 object-cover"
                 />
               )}
               <button className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100">
                 <Heart className="w-5 h-5 text-gray-600" />
               </button>
             </div>
-            <div className="p-4">
-              <h3 className="text-xl font-semibold text-gray-800">${property.price.toLocaleString()}</h3>
-              <div className="mt-1 text-gray-600">
+            <div className="p-3 sm:p-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">${property.price.toLocaleString()}</h3>
+              <div className="mt-1 text-sm sm:text-base text-gray-600">
                 {property.bedrooms} bd | {property.bathrooms} ba | {property.square_feet} sqft
               </div>
-              <p className="mt-2 text-gray-800">{property.title}</p>
-              <p className="mt-1 text-gray-600">
+              <p className="mt-2 text-base sm:text-lg text-gray-800 line-clamp-2">{property.title}</p>
+              <p className="mt-1 text-sm sm:text-base text-gray-600 line-clamp-1">
                 {property.address}, {property.city}, {property.state} {property.zip_code}
               </p>
-              <div className="mt-2 text-sm text-gray-500">
+              <div className="mt-2 text-xs sm:text-sm text-gray-500">
                 Listed {new Date(property.created_at).toLocaleDateString()}
               </div>
             </div>
@@ -203,16 +203,16 @@ export function PropertyList({ type = 'sale' }: PropertyListProps) {
 
       {/* Property Details Modal */}
       {selectedProperty && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">{selectedProperty.title}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{selectedProperty.title}</h2>
                 <button
                   onClick={() => setSelectedProperty(null)}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
               </div>
 
@@ -220,40 +220,40 @@ export function PropertyList({ type = 'sale' }: PropertyListProps) {
                 <img
                   src={selectedProperty.images[0]}
                   alt={selectedProperty.title}
-                  className="w-full h-64 object-cover rounded-lg mb-6"
+                  className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4 sm:mb-6"
                 />
               )}
 
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 sm:mb-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">${selectedProperty.price.toLocaleString()}</h3>
-                  <div className="text-gray-600">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900">${selectedProperty.price.toLocaleString()}</h3>
+                  <div className="text-sm sm:text-base text-gray-600">
                     {selectedProperty.bedrooms} bd | {selectedProperty.bathrooms} ba | {selectedProperty.square_feet} sqft
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Property Details</h3>
-                  <div className="text-gray-600">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Property Details</h3>
+                  <div className="text-sm sm:text-base text-gray-600">
                     <p>Type: {selectedProperty.property_type}</p>
                     <p>Year Built: {selectedProperty.year_built}</p>
-                    <p>Address: {selectedProperty.address}, {selectedProperty.city}, {selectedProperty.state} {selectedProperty.zip_code}</p>
+                    <p className="line-clamp-2">Address: {selectedProperty.address}, {selectedProperty.city}, {selectedProperty.state} {selectedProperty.zip_code}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-                <p className="text-gray-600">{selectedProperty.description}</p>
+              <div className="mb-4 sm:mb-6">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Description</h3>
+                <p className="text-sm sm:text-base text-gray-600">{selectedProperty.description}</p>
               </div>
 
               {selectedProperty.amenities && selectedProperty.amenities.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Amenities</h3>
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Amenities</h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedProperty.amenities.map((amenity, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                        className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm"
                       >
                         {amenity}
                       </span>
@@ -263,19 +263,19 @@ export function PropertyList({ type = 'sale' }: PropertyListProps) {
               )}
 
               {selectedProperty.owner && (
-                <div className="border-t pt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Owner</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-gray-600">
-                      <User className="w-5 h-5 mr-2" />
+                <div className="border-t pt-4 sm:pt-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Contact Owner</h3>
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-center text-sm sm:text-base text-gray-600">
+                      <User className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       <span>{selectedProperty.owner.name}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
-                      <Mail className="w-5 h-5 mr-2" />
+                    <div className="flex items-center text-sm sm:text-base text-gray-600">
+                      <Mail className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       <span>{selectedProperty.owner.email}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
-                      <Phone className="w-5 h-5 mr-2" />
+                    <div className="flex items-center text-sm sm:text-base text-gray-600">
+                      <Phone className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       <span>{selectedProperty.owner.phone}</span>
                     </div>
                   </div>

@@ -130,21 +130,21 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-8 max-w-4xl mx-auto p-4 sm:p-6">
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+        <div className="bg-red-50 text-red-600 p-3 sm:p-4 rounded-lg text-sm sm:text-base">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">Title</label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -155,7 +155,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="number"
             value={formData.price}
             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -166,7 +166,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="number"
             value={formData.bedrooms}
             onChange={(e) => setFormData({ ...formData, bedrooms: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -177,7 +177,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="number"
             value={formData.bathrooms}
             onChange={(e) => setFormData({ ...formData, bathrooms: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -188,7 +188,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="number"
             value={formData.square_feet}
             onChange={(e) => setFormData({ ...formData, square_feet: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -199,7 +199,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="number"
             value={formData.year_built}
             onChange={(e) => setFormData({ ...formData, year_built: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -210,20 +210,20 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
         <textarea
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
           rows={4}
           required
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">Address</label>
           <input
             type="text"
             value={formData.address}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -234,7 +234,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="text"
             value={formData.city}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -245,7 +245,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="text"
             value={formData.state}
             onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -256,7 +256,7 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
             type="text"
             value={formData.zip_code}
             onChange={(e) => setFormData({ ...formData, zip_code: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
             required
           />
         </div>
@@ -267,32 +267,29 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
         <select
           value={formData.property_type}
           onChange={(e) => setFormData({ ...formData, property_type: e.target.value })}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base"
           required
         >
-          <option value="">Select type</option>
-          <option value="House">House</option>
-          <option value="Apartment">Apartment</option>
-          <option value="Condo">Condo</option>
-          <option value="Townhouse">Townhouse</option>
-          <option value="Land">Land</option>
+          <option value="">Select a property type</option>
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="condo">Condo</option>
+          <option value="townhouse">Townhouse</option>
+          <option value="land">Land</option>
         </select>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
           {amenityOptions.map((amenity) => (
-            <label key={amenity} className="flex items-center space-x-2">
+            <label key={amenity} className="flex items-center space-x-2 text-sm sm:text-base">
               <input
                 type="checkbox"
                 checked={formData.amenities.includes(amenity)}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    setFormData({
-                      ...formData,
-                      amenities: [...formData.amenities, amenity],
-                    });
+                    setFormData({ ...formData, amenities: [...formData.amenities, amenity] });
                   } else {
                     setFormData({
                       ...formData,
@@ -300,52 +297,57 @@ export function PropertyForm({ type, onSuccess }: PropertyFormProps) {
                     });
                   }
                 }}
-                className="rounded border-gray-300 text-blue-600"
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-sm text-gray-700">{amenity}</span>
+              <span>{amenity}</span>
             </label>
           ))}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Images (Max 10)
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleImageChange}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        />
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
           {imageUrls.map((url, index) => (
-            <div key={index} className="relative">
+            <div key={index} className="relative group">
               <img
                 src={url}
                 alt={`Preview ${index + 1}`}
-                className="w-full h-32 object-cover rounded-lg"
+                className="w-full h-24 sm:h-32 object-cover rounded-lg"
               />
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 ×
               </button>
             </div>
           ))}
+          {imageUrls.length < 10 && (
+            <label className="flex items-center justify-center h-24 sm:h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                multiple
+              />
+              <span className="text-sm sm:text-base text-gray-500">Add Images</span>
+            </label>
+          )}
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-      >
-        {loading ? 'Creating listing...' : `List for ${type}`}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+        >
+          {loading ? 'Creating...' : 'Create Property Listing'}
+        </button>
+      </div>
     </form>
   );
 } 

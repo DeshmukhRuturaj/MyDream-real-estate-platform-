@@ -1,33 +1,19 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, Property } from '../lib/supabase';
 import { GoogleMap, useLoadScript, Marker, StandaloneSearchBox } from '@react-google-maps/api';
 import type { Libraries } from '@react-google-maps/api';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-interface Property {
-  id: string;
-  title: string;
-  description: string;
-  price?: number;
-  monthly_rent?: number;
-  bedrooms: number;
-  bathrooms: number;
-  square_footage: number;
-  address: string;
-  city: string;
-  state: string;
-  zip_code: string;
-  property_type: string;
-  images: string[];
-  status: string;
-  type: string;
-  latitude?: number;
-  longitude?: number;
-  owner_name: string;
-  owner_email: string;
-  owner_phone: string;
+interface PropertyWithOwner extends Property {
+  owner?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  lat?: number;
+  lng?: number;
 }
 
 interface MapSearchBoxProps {
@@ -36,7 +22,7 @@ interface MapSearchBoxProps {
 }
 
 interface PropertyDetailsModalProps {
-  property: Property | null;
+  property: PropertyWithOwner | null;
   onClose: () => void;
 }
 
@@ -133,152 +119,112 @@ function PropertyDetailsModal({ property, onClose }: PropertyDetailsModalProps) 
   if (!property) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white z-10 p-3 sm:p-4 border-b flex justify-between items-center">
-          <h2 className="text-lg sm:text-2xl font-bold">{property.title}</h2>
-          <button
-            onClick={onClose}
-            className="p-1 sm:p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-        </div>
-        
-        <div className="p-3 sm:p-6">
-          {/* Image Gallery */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            {property.images.map((image, index) => (
-              <div key={index} className="relative aspect-video">
-                <img
-                  src={image}
-                  alt={`${property.title} - Image ${index + 1}`}
-                  className="w-full h-full object-cover rounded-lg"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = '/placeholder-property.jpg';
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Price and Status */}
-          <div className="mb-4 sm:mb-6">
-            <div className="text-xl sm:text-3xl font-bold text-blue-600 mb-2">
-              {property.type === 'sale' 
-                ? formatIndianPrice(property.price || 0)
-                : `${formatIndianPrice(property.monthly_rent || 0)}/mo`}
-            </div>
-            <div className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-              {property.type === 'sale' ? 'For Sale' : 'For Rent'}
-            </div>
-          </div>
-
-          {/* Property Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Property Details</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Bedrooms</span>
-                  <span className="font-medium">{property.bedrooms}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Bathrooms</span>
-                  <span className="font-medium">{property.bathrooms}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Square Footage</span>
-                  <span className="font-medium">{property.square_footage} sqft</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Property Type</span>
-                  <span className="font-medium capitalize">{property.property_type}</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Location</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Address</span>
-                  <span className="font-medium text-right">{property.address}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">City</span>
-                  <span className="font-medium">{property.city}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">State</span>
-                  <span className="font-medium">{property.state}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">ZIP Code</span>
-                  <span className="font-medium">{property.zip_code}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="mb-4 sm:mb-6">
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Description</h3>
-            <p className="text-sm sm:text-base text-gray-600 whitespace-pre-line">{property.description}</p>
-          </div>
-
-          {/* Owner Contact Information */}
-          <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Contact Owner</h3>
-            <div className="space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center">
-                <span className="text-gray-600 sm:w-24 mb-1 sm:mb-0">Name:</span>
-                <span className="font-medium">{property.owner_name}</span>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center">
-                <span className="text-gray-600 sm:w-24 mb-1 sm:mb-0">Phone:</span>
-                <a 
-                  href={`tel:${property.owner_phone}`}
-                  className="font-medium text-blue-600 hover:text-blue-800"
-                >
-                  {property.owner_phone}
-                </a>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center">
-                <span className="text-gray-600 sm:w-24 mb-1 sm:mb-0">Email:</span>
-                <a 
-                  href={`mailto:${property.owner_email}?subject=Inquiry about ${property.title}`}
-                  className="font-medium text-blue-600 hover:text-blue-800 break-all"
-                >
-                  {property.owner_email}
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Contact Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
-            <button 
-              onClick={() => window.location.href = `tel:${property.owner_phone}`}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center"
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-start mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">{property.title}</h2>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-              </svg>
-              Call Owner
-            </button>
-            <button 
-              onClick={() => window.location.href = `mailto:${property.owner_email}?subject=Inquiry about ${property.title}`}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg>
-              Email Owner
+              <X className="w-6 h-6" />
             </button>
           </div>
+
+          {property.images && property.images.length > 0 && (
+            <img
+              src={property.images[0]}
+              alt={property.title}
+              className="w-full h-64 object-cover rounded-lg mb-6"
+            />
+          )}
+
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">
+                {property.type === 'sale' 
+                  ? `$${property.price.toLocaleString()}`
+                  : `$${property.price.toLocaleString()}/month`}
+              </h3>
+              <div className="text-gray-600">
+                {property.bedrooms} bd | {property.bathrooms} ba | {property.square_feet} sqft
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Property Details</h3>
+              <div className="text-gray-600">
+                <p>Type: {property.property_type}</p>
+                <p>Year Built: {property.year_built}</p>
+                <p>Address: {property.address}, {property.city}, {property.state} {property.zip_code}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+            <p className="text-gray-600">{property.description}</p>
+          </div>
+
+          {property.amenities && property.amenities.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Amenities</h3>
+              <div className="flex flex-wrap gap-2">
+                {property.amenities.map((amenity, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                  >
+                    {amenity}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {property.owner && (
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Owner</h3>
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <span className="text-gray-600 sm:w-24 mb-1 sm:mb-0">Name:</span>
+                  <span className="font-medium">{property.owner?.name}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <span className="text-gray-600 sm:w-24 mb-1 sm:mb-0">Phone:</span>
+                  <a 
+                    href={`tel:${property.owner?.phone}`}
+                    className="font-medium text-blue-600 hover:text-blue-800"
+                  >
+                    {property.owner?.phone}
+                  </a>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <span className="text-gray-600 sm:w-24 mb-1 sm:mb-0">Email:</span>
+                  <a 
+                    href={`mailto:${property.owner?.email}?subject=Inquiry about ${property.title}`}
+                    className="font-medium text-blue-600 hover:text-blue-800 break-all"
+                  >
+                    {property.owner?.email}
+                  </a>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mt-6">
+                <button 
+                  onClick={() => window.location.href = `tel:${property.owner?.phone}`}
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center"
+                >
+                  Call Now
+                </button>
+                <button 
+                  onClick={() => window.location.href = `mailto:${property.owner?.email}?subject=Inquiry about ${property.title}`}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
+                >
+                  Send Email
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -288,9 +234,9 @@ function PropertyDetailsModal({ property, onClose }: PropertyDetailsModalProps) 
 export function Buy() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<PropertyWithOwner[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<PropertyWithOwner | null>(null);
   const [mapCenter, setMapCenter] = useState(center);
   const [mapZoom, setMapZoom] = useState(12);
   const [filters, setFilters] = useState({
@@ -449,7 +395,7 @@ export function Buy() {
     navigate(`/buy?lat=${location.lat}&lng=${location.lng}`, { replace: true });
   }, [navigate]);
 
-  const handlePropertyClick = (property: Property) => {
+  const handlePropertyClick = (property: PropertyWithOwner) => {
     setSelectedProperty(property);
     setShowPropertyDetails(true);
   };
@@ -492,12 +438,11 @@ export function Buy() {
             initialSearchValue={searchLocation || ''} 
           />
           {properties.map((property) => (
-            property.latitude && property.longitude && (
+            property.lat && property.lng && (
               <Marker
                 key={property.id}
-                position={{ lat: property.latitude, lng: property.longitude }}
+                position={{ lat: property.lat, lng: property.lng }}
                 onClick={() => handlePropertyClick(property)}
-                title={property.title}
               />
             )
           ))}
@@ -507,47 +452,40 @@ export function Buy() {
   };
 
   const renderPropertyList = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {properties.map((property) => (
-        <div 
-          key={property.id} 
-          className={`bg-white rounded-lg shadow overflow-hidden cursor-pointer transition-all ${
-            selectedProperty?.id === property.id ? 'ring-2 ring-blue-500' : ''
-          } hover:shadow-lg`}
+        <div
+          key={property.id}
           onClick={() => handlePropertyClick(property)}
+          className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
         >
-          <div className="relative h-48">
-            <img
-              src={property.images[0] || '/placeholder-property.jpg'}
-              alt={property.title}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = '/placeholder-property.jpg';
-              }}
-            />
-            <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-sm">
-              {property.type === 'sale' ? 'For Sale' : 'For Rent'}
+          <div className="relative">
+            {property.images && property.images.length > 0 && (
+              <img
+                src={property.images[0]}
+                alt={property.title}
+                className="w-full h-48 object-cover"
+              />
+            )}
+            <div className="absolute top-2 left-2">
+              <span className="bg-white/80 px-3 py-1 rounded-full text-sm font-medium">
+                {property.type === 'sale' ? 'For Sale' : 'For Rent'}
+              </span>
             </div>
           </div>
           <div className="p-4">
-            <h3 className="text-lg font-semibold mb-2">{property.title}</h3>
-            <p className="text-gray-600 mb-2">{property.address}</p>
-            <p className="text-gray-600 mb-2">{`${property.city}, ${property.state} ${property.zip_code}`}</p>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xl font-bold text-blue-600">
-                {property.type === 'sale' 
-                  ? formatIndianPrice(property.price || 0)
-                  : `${formatIndianPrice(property.monthly_rent || 0)}/mo`}
-              </span>
+            <h3 className="text-xl font-semibold text-gray-900">
+              {property.type === 'sale' 
+                ? `$${property.price.toLocaleString()}`
+                : `$${property.price.toLocaleString()}/month`}
+            </h3>
+            <div className="text-gray-600 mt-1">
+              {property.bedrooms} bd | {property.bathrooms} ba | {property.square_feet} sqft
             </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <span className="mr-2">{property.bedrooms} beds</span>
-              <span className="mr-2">•</span>
-              <span className="mr-2">{property.bathrooms} baths</span>
-              <span className="mr-2">•</span>
-              <span>{property.square_footage} sqft</span>
-            </div>
+            <p className="text-gray-800 font-medium mt-2 line-clamp-2">{property.title}</p>
+            <p className="text-gray-600 mt-1 line-clamp-1">
+              {property.address}, {property.city}, {property.state} {property.zip_code}
+            </p>
           </div>
         </div>
       ))}
@@ -718,47 +656,40 @@ export function Buy() {
                 <p className="text-gray-500">No properties found matching your criteria.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {properties.map((property) => (
-                  <div 
-                    key={property.id} 
-                    className={`bg-white rounded-lg shadow overflow-hidden cursor-pointer transition-all ${
-                      selectedProperty?.id === property.id ? 'ring-2 ring-blue-500' : ''
-                    } hover:shadow-lg`}
+                  <div
+                    key={property.id}
                     onClick={() => handlePropertyClick(property)}
+                    className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                   >
-                    <div className="relative h-48 sm:h-56">
-                      <img
-                        src={property.images[0] || '/placeholder-property.jpg'}
-                        alt={property.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/placeholder-property.jpg';
-                        }}
-                      />
-                      <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-sm">
-                        {property.type === 'sale' ? 'For Sale' : 'For Rent'}
-                      </div>
-                    </div>
-                    <div className="p-3 sm:p-4">
-                      <h3 className="text-base sm:text-lg font-semibold mb-2">{property.title}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{property.address}</p>
-                      <p className="text-sm text-gray-600 mb-2">{`${property.city}, ${property.state} ${property.zip_code}`}</p>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-lg sm:text-xl font-bold text-blue-600">
-                          {property.type === 'sale' 
-                            ? formatIndianPrice(property.price || 0)
-                            : `${formatIndianPrice(property.monthly_rent || 0)}/mo`}
+                    <div className="relative">
+                      {property.images && property.images.length > 0 && (
+                        <img
+                          src={property.images[0]}
+                          alt={property.title}
+                          className="w-full h-48 object-cover"
+                        />
+                      )}
+                      <div className="absolute top-2 left-2">
+                        <span className="bg-white/80 px-3 py-1 rounded-full text-sm font-medium">
+                          {property.type === 'sale' ? 'For Sale' : 'For Rent'}
                         </span>
                       </div>
-                      <div className="flex items-center text-xs sm:text-sm text-gray-500">
-                        <span className="mr-2">{property.bedrooms} beds</span>
-                        <span className="mr-2">•</span>
-                        <span className="mr-2">{property.bathrooms} baths</span>
-                        <span className="mr-2">•</span>
-                        <span>{property.square_footage} sqft</span>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {property.type === 'sale' 
+                          ? `$${property.price.toLocaleString()}`
+                          : `$${property.price.toLocaleString()}/month`}
+                      </h3>
+                      <div className="text-gray-600 mt-1">
+                        {property.bedrooms} bd | {property.bathrooms} ba | {property.square_feet} sqft
                       </div>
+                      <p className="text-gray-800 font-medium mt-2 line-clamp-2">{property.title}</p>
+                      <p className="text-gray-600 mt-1 line-clamp-1">
+                        {property.address}, {property.city}, {property.state} {property.zip_code}
+                      </p>
                     </div>
                   </div>
                 ))}

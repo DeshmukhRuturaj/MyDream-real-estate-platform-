@@ -57,8 +57,8 @@ export function SearchBar({ onSearch, redirectToBuy = false }: SearchBarProps) {
   };
 
   return (
-    <div className="relative">
-      <div className="bg-white rounded-full shadow-lg p-2">
+    <div className="relative w-full max-w-3xl mx-auto">
+      <div className="bg-white rounded-full shadow-lg p-1 sm:p-2">
         <div className="flex items-center">
           <input
             type="text"
@@ -70,7 +70,7 @@ export function SearchBar({ onSearch, redirectToBuy = false }: SearchBarProps) {
             onKeyPress={handleKeyPress}
             onFocus={() => setShowHistory(true)}
             placeholder="Enter an address, neighborhood, city, or ZIP code"
-            className="flex-1 px-4 py-3 text-lg border-none focus:outline-none rounded-full"
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-lg border-none focus:outline-none rounded-full"
           />
           
           {query && (
@@ -79,20 +79,20 @@ export function SearchBar({ onSearch, redirectToBuy = false }: SearchBarProps) {
                 setQuery('');
                 setShowHistory(false);
               }}
-              className="p-2 text-gray-500 hover:text-red-600 transition-colors"
+              className="p-1 sm:p-2 text-gray-500 hover:text-red-600 transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           )}
           
           <button
             onClick={() => handleSearch(query)}
-            className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors ml-2"
+            className="p-2 sm:p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors ml-1 sm:ml-2"
           >
             {isLoading ? (
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Search className="w-6 h-6" />
+              <Search className="w-5 h-5 sm:w-6 sm:h-6" />
             )}
           </button>
         </div>
@@ -101,14 +101,14 @@ export function SearchBar({ onSearch, redirectToBuy = false }: SearchBarProps) {
       {/* Search History Dropdown */}
       {showHistory && searchHistory.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg overflow-hidden z-10">
-          <div className="flex items-center justify-between px-4 py-2 bg-gray-50">
+          <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-gray-50">
             <div className="flex items-center text-gray-600">
               <History className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Recent Searches</span>
+              <span className="text-xs sm:text-sm font-medium">Recent Searches</span>
             </div>
             <button
               onClick={clearHistory}
-              className="text-sm text-red-600 hover:text-red-700"
+              className="text-xs sm:text-sm text-red-600 hover:text-red-700"
             >
               Clear All
             </button>
@@ -118,10 +118,10 @@ export function SearchBar({ onSearch, redirectToBuy = false }: SearchBarProps) {
               <button
                 key={index}
                 onClick={() => handleSearch(item)}
-                className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center text-gray-700"
+                className="w-full px-3 sm:px-4 py-2 text-left hover:bg-gray-50 flex items-center text-sm sm:text-base text-gray-700"
               >
-                <History className="w-4 h-4 mr-3 text-gray-400" />
-                {item}
+                <History className="w-4 h-4 mr-2 sm:mr-3 text-gray-400" />
+                <span className="truncate">{item}</span>
               </button>
             ))}
           </div>
